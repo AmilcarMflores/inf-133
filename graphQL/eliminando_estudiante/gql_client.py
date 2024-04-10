@@ -32,4 +32,4 @@ query_eliminar = """
   }
 """
 response_mutation = requests.post(url, json={'query': query_eliminar})
-print(response_mutation.text)
+#print(response_mutation.text)

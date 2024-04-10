@@ -27,7 +27,11 @@ edit_taco = {
 response = requests.put(url + "/1", json=edit_taco, headers=headers)
 print(response.json())
 
+
+# GET /tacos
+response = requests.get(url)
+print(response.json())
+
 # DELETE /tacos/1
 response = requests.delete(url + "/1")
 print(response.json())
-
