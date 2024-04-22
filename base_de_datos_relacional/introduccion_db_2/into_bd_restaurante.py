@@ -48,7 +48,7 @@ print("PLATOS:")
 cursor = conn.execute("SELECT * FROM PLATOS")
 for row in cursor:
   print(row)
- 
+
 #Crear tabla de mesas
 try:
   conn.execute(
@@ -142,7 +142,30 @@ cursor = conn.execute("SELECT * FROM PEDIDOS")
 for row in cursor:
   print(row)
   
-#conn.commit()
+#CRUD en bd's
+# - Create: INSERT INTO [tabla] (...) VALUES (...)
+# - Read: SELECT * FROM [tabla] WHERE [condicional]
+# - Update: UPDATE [tabla] SET [campo=valor] WHERE [condicional]
+# - Delete: DELETE FROM [tabla] WHERE [condicional]  
+
+#Actualiza el precio del plato con id 2 (Hamburguesa) a 9.99
+conn.execute(
+  """
+  UPDATE PLATOS 
+  SET precio = 9.99
+  WHERE id = 2 
+  """
+) 
+#Cambia la categoría del plato con id 3 (Sushi) a "Fusión"
+conn.execute(
+  """
+  DELETE FROM PEDIDOS
+  WHERE id = 3
+  """
+)
+
+  
+conn.commit()
   
 #Cerrar conexión
 conn.close()
