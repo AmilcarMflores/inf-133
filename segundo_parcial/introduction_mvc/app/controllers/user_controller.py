@@ -24,8 +24,13 @@ def registro():
         # Obtenemos los datos del formulario
         first_name = request.form['first_name']
         last_name = request.form['last_name']
+        
+        email = request.form['email']
+        birthdate = request.form['birthdate']
+        password = request.form['password']
+        
         # Creamos un nuevo usuario
-        user = User(first_name, last_name)
+        user = User(first_name, last_name, email, birthdate, password)
         # Guardamos el usuario
         user.save()
         # Redirigimos a la vista de usuarios
