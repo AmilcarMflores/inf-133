@@ -29,7 +29,36 @@ else:
 # Agrega las siguiente rutas y consume desde el cliente
 # Suma dos numeros:
 # ● /sumar?num1=5&num2=3
+params = {'num1': '4', 'num2': '5'}
+response = requests.get(url + 'sumar', params=params)
+
+if response.status_code == 200:
+  data = response.json()
+  mensaje = data['mensaje']
+  print("Respuesta del servidor (GET):", mensaje)
+else:
+  print("Error al conectar con el servidor (GET):", response.status_code)
+  
 # Determina si una cadena es palindromo
 # ● /palindromo?cadena=”reconocer”
+params = {'cadena': 'reconocer'}
+response = requests.get(url + 'palindromo', params=params)
+
+if response.status_code == 200:
+  data = response.json()
+  mensaje = data['mensaje']
+  print("Respuesta del servidor (GET):", mensaje)
+else:
+  print("Error al conectar con el servidor (GET):", response.status_code)
+
 # Cuenta una vocal en una cadena
 # ● /contar?cadena=”exepciones”&vocal=”e”
+params = {'cadena' : 'exepciones', 'vocal': 'e'}
+response = requests.get(url + 'contar', params=params)
+
+if response.status_code == 200:
+  data = response.json()
+  mensaje = data['mensaje']
+  print("Respuesta del servidor (GET):", mensaje)
+else:
+  print("Error al conectar con el servidor (GET):", response.status_code)
