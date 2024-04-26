@@ -1,3 +1,4 @@
+# Biblioteca requests, puedes enviar solicitudes HTTP a servidores web y recibir respuestas. 
 import requests
 
 # URL del servidor Flask

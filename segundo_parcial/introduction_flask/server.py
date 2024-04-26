@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 # Flask lo utiliza para determinar la ruta de las plantillas y archivos estáticos.
 app = Flask(__name__)
 
+# Define una función para manejar solicitudes GET en la ruta raíz ('/')
 @app.route('/')
 def index():
   return '¡Hola mundo!'
