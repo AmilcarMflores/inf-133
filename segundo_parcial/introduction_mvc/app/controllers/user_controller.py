@@ -4,6 +4,8 @@ from views import user_view
 # Importamos el modelo de usuario
 from models.user_model import User
 
+from datetime import datetime
+
 # Un Blueprint es un objeto que agrupa rutas y vistas
 user_bp = Blueprint('user', __name__)
 
@@ -27,6 +29,7 @@ def registro():
         
         email = request.form['email']
         birthdate = request.form['birthdate']
+        birthdate = datetime.strptime(birthdate, '%Y-%m-%d').date()
         password = request.form['password']
         
         # Creamos un nuevo usuario

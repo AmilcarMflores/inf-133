@@ -1,4 +1,5 @@
 from database import db
+from sqlalchemy import Date
 # `db.Model` es una clase base para todos los modelos de SQLAlchemy
 # Define la clase `User` que hereda de `db.Model`
 # `User` representa la tabla `users` en la base de datos
@@ -10,7 +11,7 @@ class User(db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     # Ejercicios
     email = db.Column(db.String(50), nullable = False)
-    birthdate = db.Column(db.Date, nullable = False)
+    birthdate = db.Column(Date, nullable = False)
     password = db.Column(db.String(50), nullable=False)
 
 
