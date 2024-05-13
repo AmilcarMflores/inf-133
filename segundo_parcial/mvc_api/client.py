@@ -46,3 +46,4 @@ if response.status_code == 204:
     print(f"Animal con ID 1 eliminado con éxito.")
 else:
     print(f"Error: {response.status_code} - {response.text}")
+

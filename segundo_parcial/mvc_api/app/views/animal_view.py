@@ -21,3 +21,4 @@ def render_animal_detail(animal):
         "species": animal.species,
         "age": animal.age,
     }
+    
