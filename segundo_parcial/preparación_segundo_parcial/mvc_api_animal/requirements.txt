@@ -1,0 +1,5 @@
+flask
+flask-sqlalchemy
+
+# Documentando api:
+# pip install flask-swagger-ui
