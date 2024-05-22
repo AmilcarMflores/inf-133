@@ -1,0 +1,11 @@
+flask
+flask-sqlalchemy
+
+Flask:
+pip install Flask
+documentación:
+pip install flask-swagger-ui
+autenticación web app:
+pip install Flask-Login
+autenticación api:
+pip install Flask-JWT-Extended
