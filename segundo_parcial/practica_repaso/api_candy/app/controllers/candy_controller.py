@@ -1,42 +1,70 @@
 from flask import Blueprint, request, jsonify
-from models.candy_model import Dulce
-from views.candy_view import render_dulce_detail, render_dulce_list
+from models.candy_model import Candy
+from views.candy_view import render_candy_list, render_candy_detail
 from utils.decorators import jwt_required, roles_required
+from functools import wraps
 
-dulce_bp = Blueprint("dulce", __name__)
+candy_bp = Blueprint("candy",__name__)
 
-@dulce_bp.route("/dulces", methods=["GET"])
-@jwt_required
-@roles_required(roles=["admin", "user"])
-def get_dulces():
-    dulces = Dulce.get_all()
-    return jsonify(render_dulce_list(dulces))
-
-
-@dulce_bp.route("/dulces/<int:id>", methods=["GET"])
+@candy_bp.route("/candies", methods=["GET"])
 @jwt_required
 @roles_required(roles=["admin","user"])
-def get_dulce(id):
-    dulce = Dulce.get_by_id(id)
-    if dulce:
-        return jsonify(render_dulce_detail(dulce))
-    return jsonify({"error": "Dulce no encontrado"}), 404
+def get_candies():
+  candies = Candy.get_all()
+  return jsonify(render_candy_list(candies))
 
-@dulce_bp.route("/dulces", methods=["POST"])
+@candy_bp.route("/candies/<int:id>", methods=["GET"])
+@jwt_required
+@roles_required(roles=["admin","user"])
+def get_candy(id):
+  candy = Candy.get_by_id(id)
+  if candy:
+    return jsonify(render_candy_detail(candy))
+  return jsonify({"error": "Dulce no encontrado"}), 404
+
+@candy_bp.route("/candies", methods=["POST"])
+@jwt_required
+@roles_required(roles=["admin","user"])
+def create_candy():
+  data = request.json
+  # brand,weight,flavor,origin
+  brand = data.get("brand")
+  weight = data.get("weight")
+  flavor = data.get("flavor")
+  origin = data.get("origin")
+  
+  if not (brand and weight is not None and flavor and origin):
+    return jsonify({"error": "Faltan datos requeridos"}), 400
+  
+  candy = Candy(brand=brand,weight=weight,flavor=flavor,origin=origin)
+  candy.save()
+  
+  return jsonify(render_candy_detail(candy)), 201
+
+@candy_bp.route("/candies/<int:id>", methods=["PUT"])
 @jwt_required
 @roles_required(roles=["admin"])
-def create_dulce():
-    data = request.json
-    marca = data.get("marca")
-    peso = data.get("peso")
-    sabor = data.get("sabor")
-    origen = data.get("origen")
+def update_candy(id):
+  candy = Candy.get_by_id(id)
+  
+  if not candy:
+    return jsonify({"error": "Dulce no encontrado"}), 404
+  
+  data = request.json
+  brand = data.get("brand")
+  weight = data.get("weight")
+  flavor = data.get("flavor")
+  origin = data.get("origin")
+  
+  candy.update(brand=brand,weight=weight,flavor=flavor,origin=origin)
+  return jsonify(render_candy_detail(candy))
 
-    if not marca or peso is None or not sabor or not origen:
-        return jsonify({"error": "Faltan datos requeridos"}), 400
-
-    dulce = Dulce(marca=marca, peso=peso, sabor=sabor, origen=origen)
-    dulce.save()
-
-    return jsonify(render_dulce_detail(dulce)), 201
-
+@candy_bp.route("/candies/<int:id>", methods=["DELETE"])
+@jwt_required
+@roles_required(roles=["admin"])
+def delete_candy(id):
+  candy = Candy.get_by_id(id)
+  if not candy:
+    return jsonify({"error": "Dulce no encontrado"}), 404
+  candy.delete()
+  return "", 204
