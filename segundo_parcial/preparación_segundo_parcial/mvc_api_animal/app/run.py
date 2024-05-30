@@ -3,8 +3,13 @@ from controllers.animal_controller import animal_bp
 from database import db
 from flask_swagger_ui import get_swaggerui_blueprint
 
+from flask_jwt_extended import JWTManager
+from controllers.user_controller import user_bp
+
 app = Flask(__name__)
 
+# Configuración de la clave secreta para JWT
+app.config["JWT_SECRET_KEY"] = "tu_clave_secreta_aqui"
 # Configura la url de la documentación OpenAPI
 SWAGGER_URL = "/api/docs"
 API_URL = "/static/swagger.json"
@@ -22,8 +27,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Inicializa la db
 db.init_app(app)
 
-# Registra el blueprint de animales en la aplicación
+# Inicializa la extensión JWTManager
+jwt = JWTManager(app)
+
+# Registra los blueprints de animales y usuarios en la aplicación
 app.register_blueprint(animal_bp, url_prefix="/api")
+app.register_blueprint(user_bp, url_prefix="/api")
 
 # Crea las tablas si no existen
 with app.app_context():
