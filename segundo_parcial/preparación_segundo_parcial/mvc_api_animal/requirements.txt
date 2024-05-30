@@ -3,3 +3,8 @@ flask-sqlalchemy
 
 # Documentando api:
 # pip install flask-swagger-ui
+
+# Agregando autenticación a una web app
+# pip install Flask-Login
+
+
