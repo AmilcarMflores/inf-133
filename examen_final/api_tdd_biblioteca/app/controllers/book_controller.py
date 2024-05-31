@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from models.book_model import Book
-from views.book_view import render_book_detail, render_book_list
-from utils.decorators import jwt_required, roles_required
+from app.models.book_model import Book
+from app.views.book_view import render_book_detail, render_book_list
+from app.utils.decorators import jwt_required, roles_required
 from functools import wraps
 
 book_bp = Blueprint("book",__name__)
