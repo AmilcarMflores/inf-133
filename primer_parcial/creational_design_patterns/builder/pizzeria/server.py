@@ -1,13 +1,17 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
+# Base de datos
+pizzas = {}
+
 # Producto: Pizza
 class Pizza:
     def __init__(self):
         self.tamaño = None
         self.masa = None
         self.toppings = []
-
+        
+    # Define el comportamiento de la conversión de un objeto a una cadena de texto. 
     def __str__(self):
         return f"Tamaño: {self.tamaño}, Masa: {self.masa}, Toppings: {', '.join(self.toppings)}"
 
@@ -46,19 +50,44 @@ class PizzaService:
         self.builder = PizzaBuilder()
         self.pizzeria = Pizzeria(self.builder)
 
-    def handle_post_request(self, post_data):
+    def create_pizza(self, post_data):
         tamaño = post_data.get('tamaño', None)
         masa = post_data.get('masa', None)
         toppings = post_data.get('toppings', [])
 
         pizza = self.pizzeria.create_pizza(tamaño, masa, toppings)
+        pizzas[len(pizzas) + 1] = pizza
 
-        return {
-            'tamaño': pizza.tamaño,
-            'masa': pizza.masa,
-            'toppings': pizza.toppings
-        }
+        return pizza
 
+    def read_pizzas(self):
+        print(pizzas)
+        return {int(index): pizza.__dict__ for index, pizza in pizzas.items()}
+    
+    def update_pizza(self, index, data):
+        if index in pizzas:
+            pizza = pizzas[index]
+            tamaño = data.get("tamaño", None)
+            masa = data.get("masa", None)
+            toppings = data.get("toppings", [])
+            
+            if tamaño:
+                pizza.tamaño = tamaño
+            if masa:
+                pizza.masa = masa
+            if toppings:
+                pizza.toppings = toppings
+            
+            return pizza
+        else:
+            return None
+    
+    def delete_pizza(self, index):
+        if index in pizzas:
+            return pizzas.pop(index)
+        else:
+            return None
+        
 class HTTPDataHandler:
     @staticmethod
     def handle_response(handler, status, data):
@@ -79,21 +108,64 @@ class PizzaHandler(BaseHTTPRequestHandler):
         super().__init__(*args, **kwargs)
         
     def do_POST(self):
-        if self.path == '/pizza':
+        if self.path == '/pizzas':
             
             data = HTTPDataHandler.handle_reader(self)
-            response_data = self.controller.handle_post_request(data)
+            response_data = self.controller.create_pizza(data)
             
-            HTTPDataHandler.handle_response(self, 201, response_data)
+            HTTPDataHandler.handle_response(self, 201, response_data.__dict__)
         else:
             HTTPDataHandler.handle_response(self, 404, {"Error": "Ruta no existente"})
 
+    def do_GET(self):
+        if self.path == '/pizzas':
+            response_data = self.controller.read_pizzas()
+            HTTPDataHandler.handle_response(self, 200, response_data)
+        else:
+            HTTPDataHandler.handle_response(self, 404, {"Error": "Ruta no existente"})
+            
+    def do_PUT(self):
+        if self.path.startswith("/pizzas/"):
+            index = int(self.path.split("/")[2])
+            data = HTTPDataHandler.handle_reader(self)
+            response_data = self.controller.update_pizza(index, data)
+            if response_data:
+                HTTPDataHandler.handle_response(self, 200, response_data.__dict__)
+            else:
+                HTTPDataHandler.handle_response(self, 404, {"Error": "Índice de pizza no válido"})
+        else:
+            HTTPDataHandler.handle_response(self, 404, {"Error": "Ruta no existente"})
+    
+    def do_DELETE(self):
+        # Esta línea verifica si la ruta (self.path) comienza con el prefijo "/pizzas/". La función startswith devuelve True si la cadena especificada (en este caso, self.path) comienza con la subcadena "/pizzas/", y False en caso contrario.
+        if self.path.startswith("/pizzas/"):
+            # self.path.split("/") divide la cadena self.path en una lista de subcadenas usando el carácter / como delimitador. Por ejemplo, si self.path es "/pizzas/123", self.path.split("/") resultará en la lista ['', 'pizzas', '123'].
+            # [2] accede al tercer elemento de la lista resultante de la división (ya que las listas son indexadas comenzando desde 0). En el ejemplo dado, esto sería '123'.
+            index = int(self.path.split("/")[2])
+            deleted_pizza = self.controller.delete_pizza(index)
+            if deleted_pizza:
+                HTTPDataHandler.handle_response(self, 200, {"message": "Pizza eliminado correctamente"})
+            else:
+                HTTPDataHandler.handle_response(self, 404, {"Error": "Índice de pizza no válido"})
+        else:
+            HTTPDataHandler.handle_response(self,404,{"Error": "Ruta no existente"})
+    
 
-def run(server_class=HTTPServer, handler_class=PizzaHandler, port=8000):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Iniciando servidor HTTP en puerto {port}...")
-    httpd.serve_forever()
+# def run(server_class=HTTPServer, handler_class=PizzaHandler, port=8000):
+#     server_address = ('', port)
+#     httpd = server_class(server_address, handler_class)
+#     print(f"Iniciando servidor HTTP en puerto {port}...")
+#     httpd.serve_forever()
+
+def main():
+    try:
+        server_address = ('', 8000)
+        httpd = HTTPServer(server_address, PizzaHandler)
+        print("Iniciando servidor HTTP en puerto 8000...")
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("Apagando servidor HTTP")
+        httpd.socket.close()
 
 if __name__ == '__main__':
-    run()
+    main()
