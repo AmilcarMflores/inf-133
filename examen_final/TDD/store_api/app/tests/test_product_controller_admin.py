@@ -95,4 +95,4 @@ def test_delete_nonexistent_product(test_client, admin_auth_headers):
     # El usuario con el rol de "admin" debería recibir un error al intentar eliminar un producto inexistente
     response = test_client.delete("/api/products/999", headers=admin_auth_headers)
     assert response.status_code == 404
-    assert response.json["error"] == "Producto no encontrado"
+    assert response.json["error"] == "producto no encontrado"
